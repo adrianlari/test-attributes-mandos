@@ -1,0 +1,104 @@
+{
+  "name": "test_attributes_contract",
+  "comment": "",
+  "gasSchedule": "v3",
+  "steps": [
+    {
+      "step": "setState",
+      "accounts": {
+        "address:owner": {
+          "nonce": "1",
+          "balance": "0"
+        }
+      },
+      "newAddresses": [
+        {
+          "creatorAddress": "address:owner",
+          "creatorNonce": "1",
+          "newAddress": "sc:test"
+        }
+      ]
+    },
+
+    {
+      "step": "scDeploy",
+      "id": "1",
+      "tx": {
+        "from": "address:owner",
+        "contractCode": "file:../output/test_attributes_contract.wasm",
+        "arguments": [],
+        "gasLimit": "5,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "out": [],
+        "status": "",
+        "logs": "*",
+        "gas": "*",
+        "refund": "*"
+      }
+    },
+    {
+      "step": "setState",
+      "accounts": {
+        "sc:test": {
+          "nonce": "0",
+          "code": "file:../output/test_attributes_contract.wasm",
+          "esdt": {
+            "str:TESTTOKEN-111111": {
+              "lastNonce": "0",
+              "roles": ["ESDTRoleNFTCreate", "ESDTRoleNFTAddQuantity", "ESDTRoleNFTBurn"]
+            }
+          },
+          "owner": "address:owner"
+        }
+      }
+    },
+    {
+      "step": "scCall",
+      "id": "3",
+      "tx": {
+        "from": "address:owner",
+        "to": "sc:test",
+        "function": "test",
+        "arguments": ["str:TESTTOKEN-111111", "0"],
+        "gasLimit": "15,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "out": [],
+        "status": "",
+        "logs": "*",
+        "gas": "*",
+        "refund": "*"
+      }
+    },
+    {
+      "step": "checkState",
+      "accounts": {
+        "sc:test": {
+          "nonce": "0",
+          "code": "file:../output/test_attributes_contract.wasm",
+          "esdt": {
+            "str:TESTTOKEN-111111": {
+              "lastNonce": "1",
+              "roles": ["ESDTRoleNFTCreate", "ESDTRoleNFTAddQuantity", "ESDTRoleNFTBurn"]
+            }
+          },
+          "owner": "address:owner"
+        },
+        "address:owner": {
+          "nonce": "3",
+          "balance": "0",
+          "esdt": {
+            "str:TESTTOKEN-111111": {
+              "nonce": "1",
+              "balance": "1",
+              "attributes": "str:TESTTOKEN-111111"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
